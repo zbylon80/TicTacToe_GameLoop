@@ -8,6 +8,7 @@ extern const char PLAYER2_CHAR;
 
 // Game State
 extern bool IsGameFinished;
+extern int TurnNumber;
 
 // Game Loop functions
 void Initialize();
