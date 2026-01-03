@@ -1,0 +1,47 @@
+﻿# Visual Studio
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Build outputs
+Debug/
+Release/
+x64/
+x86/
+ARM/
+ARM64/
+**/Debug/
+**/Release/
+**/x64/
+**/x86/
+
+# CMake (jeśli użyjesz)
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+*.cmake
+
+# Intermediate / temp
+ipch/
+*.ipch
+*.obj
+*.pch
+*.idb
+*.pdb
+*.ilk
+*.tlog
+*.log
+*.iobj
+*.ipdb
+
+# Binaries
+*.exe
+*.dll
+*.lib
+*.exp
+
+# Others
+out/
+build/
