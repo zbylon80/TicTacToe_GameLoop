@@ -10,6 +10,8 @@ extern const char PLAYER2_CHAR;
 extern bool IsGameFinished;
 extern int TurnNumber;
 extern char BOARD[3][3];
+extern int SelectedRow;
+extern int SelectedCol;
 
 // Game Loop functions
 void Initialize();
