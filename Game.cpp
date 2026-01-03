@@ -1,5 +1,6 @@
 ﻿#include "Game.h"
 #include <iostream>
+#include <limits>
 
 using namespace std;
 
@@ -48,7 +49,11 @@ void Render()
 
     cout << "TicTacToe - Game Loop test\n";
     cout << "Turn: " << TurnNumber << "\n";
-    cout << "(After 3 turns the game will finish - test mode)\n";
+    cout << "(After 3 turns the game will finish - test mode)\n\n";
+
+    cout << "Press ENTER to continue...";
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    cin.get();
 }
 
 void Shutdown()
