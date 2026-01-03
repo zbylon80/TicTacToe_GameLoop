@@ -14,6 +14,9 @@ extern int SelectedRow;
 extern int SelectedCol;
 extern char CurrentPlayer;
 extern char Winner;
+extern bool PlayVsComputer;
+extern char HumanPlayer;
+extern char ComputerPlayer;
 
 // Game Loop functions
 void Initialize();

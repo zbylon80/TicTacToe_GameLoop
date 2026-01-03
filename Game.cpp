@@ -1,6 +1,7 @@
 #include "Game.h"
 #include <iostream>
 #include <limits>
+#include <cctype>
 
 using namespace std;
 
@@ -18,20 +19,92 @@ int SelectedRow = -1;
 int SelectedCol = -1;
 char CurrentPlayer = PLAYER1_CHAR;
 char Winner = EMPTY_CHAR;
+bool PlayVsComputer = false;
+char HumanPlayer = PLAYER1_CHAR;
+char ComputerPlayer = PLAYER2_CHAR;
 
 // Helper functions
 bool CheckWin(char player);
 bool IsBoardFull();
+bool FindWinningMove(char player, int& outRow, int& outCol);
+void ChooseComputerMove();
 
 void Initialize()
 {
     cout << "Welcome to tic-tac-toe!" << endl;
     IsGameFinished = false;
     TurnNumber = 0;
-    CurrentPlayer = PLAYER1_CHAR;
     SelectedRow = -1;
     SelectedCol = -1;
     Winner = EMPTY_CHAR;
+    CurrentPlayer = PLAYER1_CHAR;
+    PlayVsComputer = false;
+    HumanPlayer = PLAYER1_CHAR;
+    ComputerPlayer = PLAYER2_CHAR;
+
+    // Mode selection
+    while (true)
+    {
+        cout << "Play against computer? (y/n): ";
+        char answer = 0;
+        if (!(cin >> answer))
+        {
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            continue;
+        }
+        answer = static_cast<char>(tolower(static_cast<unsigned char>(answer)));
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+        if (answer == 'y')
+        {
+            PlayVsComputer = true;
+            break;
+        }
+        else if (answer == 'n')
+        {
+            PlayVsComputer = false;
+            break;
+        }
+        else
+        {
+            cout << "Please enter 'y' or 'n'.\n";
+        }
+    }
+
+    if (PlayVsComputer)
+    {
+        while (true)
+        {
+            cout << "Choose your symbol: X (first) or O (second): ";
+            char symbol = 0;
+            if (!(cin >> symbol))
+            {
+                cin.clear();
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                continue;
+            }
+            symbol = static_cast<char>(tolower(static_cast<unsigned char>(symbol)));
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+            if (symbol == 'x')
+            {
+                HumanPlayer = PLAYER1_CHAR;
+                ComputerPlayer = PLAYER2_CHAR;
+                break;
+            }
+            else if (symbol == 'o')
+            {
+                HumanPlayer = PLAYER2_CHAR;
+                ComputerPlayer = PLAYER1_CHAR;
+                break;
+            }
+            else
+            {
+                cout << "Please enter 'X' or 'O'.\n";
+            }
+        }
+    }
 
     // Clear the board to start with an empty grid
     for (int row = 0; row < BOARD_SIZE; ++row)
@@ -45,6 +118,12 @@ void Initialize()
 
 void GetInput()
 {
+    if (PlayVsComputer && CurrentPlayer == ComputerPlayer)
+    {
+        ChooseComputerMove();
+        return;
+    }
+
     while (true)
     {
         cout << "Enter row and column (1-" << BOARD_SIZE << "), e.g. '1 3': ";
@@ -150,6 +229,15 @@ void Render()
     {
         cout << "Turn: " << TurnNumber << "\n";
         cout << "Current player: " << CurrentPlayer << "\n\n";
+    }
+
+    if (PlayVsComputer)
+    {
+        cout << "Mode: vs computer (You: " << HumanPlayer << ", Computer: " << ComputerPlayer << ")\n";
+    }
+    else
+    {
+        cout << "Mode: two players\n";
     }
 
     cout << "Board (row, column):\n   ";
@@ -268,4 +356,95 @@ bool IsBoardFull()
         }
     }
     return true;
+}
+
+bool FindWinningMove(char player, int& outRow, int& outCol)
+{
+    for (int row = 0; row < BOARD_SIZE; ++row)
+    {
+        for (int col = 0; col < BOARD_SIZE; ++col)
+        {
+            if (BOARD[row][col] != EMPTY_CHAR)
+            {
+                continue;
+            }
+
+            BOARD[row][col] = player;
+            bool wins = CheckWin(player);
+            BOARD[row][col] = EMPTY_CHAR;
+
+            if (wins)
+            {
+                outRow = row;
+                outCol = col;
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+
+void ChooseComputerMove()
+{
+    // Priority: win > block > center > corners > first empty
+    int row = -1;
+    int col = -1;
+
+    if (FindWinningMove(ComputerPlayer, row, col))
+    {
+        SelectedRow = row;
+        SelectedCol = col;
+        return;
+    }
+
+    if (FindWinningMove(HumanPlayer, row, col))
+    {
+        SelectedRow = row;
+        SelectedCol = col;
+        return;
+    }
+
+    int center = BOARD_SIZE / 2;
+    if (BOARD[center][center] == EMPTY_CHAR)
+    {
+        SelectedRow = center;
+        SelectedCol = center;
+        return;
+    }
+
+    const int corners[4][2] = {
+        {0, 0},
+        {0, BOARD_SIZE - 1},
+        {BOARD_SIZE - 1, 0},
+        {BOARD_SIZE - 1, BOARD_SIZE - 1}
+    };
+
+    for (const auto& corner : corners)
+    {
+        int r = corner[0];
+        int c = corner[1];
+        if (BOARD[r][c] == EMPTY_CHAR)
+        {
+            SelectedRow = r;
+            SelectedCol = c;
+            return;
+        }
+    }
+
+    for (int r = 0; r < BOARD_SIZE; ++r)
+    {
+        for (int c = 0; c < BOARD_SIZE; ++c)
+        {
+            if (BOARD[r][c] == EMPTY_CHAR)
+            {
+                SelectedRow = r;
+                SelectedCol = c;
+                return;
+            }
+        }
+    }
+
+    SelectedRow = 0;
+    SelectedCol = 0;
 }
