@@ -16,6 +16,7 @@ int TurnNumber = 0;
 char BOARD[3][3];
 int SelectedRow = -1;
 int SelectedCol = -1;
+char CurrentPlayer = PLAYER1_CHAR;
 
 // Definicje funkcji
 void Initialize()
@@ -23,6 +24,9 @@ void Initialize()
     cout << "Welcome to tic-tac-toe game!" << endl;
     IsGameFinished = false;
     TurnNumber = 0;
+    CurrentPlayer = PLAYER1_CHAR;
+    SelectedRow = -1;
+    SelectedCol = -1;
 
     // Ustawiamy wszystkie pola na puste, aby plansza startowala "czysta"
     for (int row = 0; row < BOARD_SIZE; ++row)
@@ -38,12 +42,12 @@ void GetInput()
 {
     while (true)
     {
-        cout << "Podaj wiersz i kolumne (0-" << BOARD_SIZE - 1 << "), np. '0 2': ";
+        cout << "Podaj wiersz i kolumne (1-" << BOARD_SIZE << "), np. '1 3': ";
 
-        int row = 0;
-        int col = 0;
+        int rowInput = 0;
+        int colInput = 0;
 
-        if (!(cin >> row >> col))
+        if (!(cin >> rowInput >> colInput))
         {
             cout << "Niepoprawne dane. Wpisz dwie liczby.\n";
             cin.clear();
@@ -51,12 +55,16 @@ void GetInput()
             continue;
         }
 
-        if (row < 0 || row >= BOARD_SIZE || col < 0 || col >= BOARD_SIZE)
+        if (rowInput < 1 || rowInput > BOARD_SIZE || colInput < 1 || colInput > BOARD_SIZE)
         {
-            cout << "Wspolrzedne poza zakresem 0-" << BOARD_SIZE - 1 << ". Sprobuj ponownie.\n";
+            cout << "Wspolrzedne poza zakresem 1-" << BOARD_SIZE << ". Sprobuj ponownie.\n";
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
             continue;
         }
+
+        // Konwertujemy na indeksy 0-based do tablicy
+        int row = rowInput - 1;
+        int col = colInput - 1;
 
         if (BOARD[row][col] != EMPTY_CHAR)
         {
@@ -74,13 +82,31 @@ void GetInput()
 
 void Update()
 {
+    // Zapisz ruch biezacego gracza na planszy
+    BOARD[SelectedRow][SelectedCol] = CurrentPlayer;
+
+    // Przechodzimy do kolejnej tury
     TurnNumber++;
 
-    // test: po 3 turach konczymy gre
-    if (TurnNumber >= 3)
+    // Zmien gracza na nastepnego
+    if (CurrentPlayer == PLAYER1_CHAR)
+    {
+        CurrentPlayer = PLAYER2_CHAR;
+    }
+    else
+    {
+        CurrentPlayer = PLAYER1_CHAR;
+    }
+
+    // Tymczasowy warunek konca: plansza zapelniona
+    if (TurnNumber >= BOARD_SIZE * BOARD_SIZE)
     {
         IsGameFinished = true;
     }
+
+    // Wyczysc wybory ruchu, zostana ustawione w GetInput
+    SelectedRow = -1;
+    SelectedCol = -1;
 }
 
 void Render()
@@ -93,18 +119,18 @@ void Render()
 
     cout << "TicTacToe - Game Loop test\n";
     cout << "Turn: " << TurnNumber << "\n";
-    cout << "(After 3 turns the game will finish - test mode)\n\n";
+    cout << "(Gra konczy sie, gdy plansza jest pelna - tryb testowy)\n\n";
 
     cout << "Board (row, column):\n   ";
     for (int col = 0; col < BOARD_SIZE; ++col)
     {
-        cout << col << ' ';
+        cout << (col + 1) << ' ';
     }
     cout << "\n";
 
     for (int row = 0; row < BOARD_SIZE; ++row)
     {
-        cout << ' ' << row << ' ';
+        cout << ' ' << (row + 1) << ' ';
         for (int col = 0; col < BOARD_SIZE; ++col)
         {
             cout << BOARD[row][col] << ' ';
@@ -112,11 +138,7 @@ void Render()
         cout << "\n";
     }
 
-    cout << "\nUse coordinates like '0 2' for row 0, column 2.\n\n";
-
-    cout << "Press ENTER to continue...";
-    cin.ignore(numeric_limits<streamsize>::max(), '\n');
-    cin.get();
+    cout << "\nUse coordinates like '1 3' for row 1, column 3.\n";
 }
 
 void Shutdown()

@@ -4,6 +4,9 @@ int main()
 {
     Initialize();
 
+    // Pokazujemy planszę startową, zanim gracz wykona pierwszy ruch
+    Render();
+
     while (!IsGameFinished)
     {
         GetInput();
