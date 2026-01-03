@@ -4,13 +4,13 @@
 
 using namespace std;
 
-// Definicje stalych (tu naprawde istnieja)
+// Game constants
 const int BOARD_SIZE = 3;
 const char EMPTY_CHAR = '_';
 const char PLAYER1_CHAR = 'X';
 const char PLAYER2_CHAR = 'O';
 
-// Prosty stan gry (na razie minimalny)
+// Game state variables
 bool IsGameFinished = false;
 int TurnNumber = 0;
 char BOARD[3][3];
@@ -19,14 +19,13 @@ int SelectedCol = -1;
 char CurrentPlayer = PLAYER1_CHAR;
 char Winner = EMPTY_CHAR;
 
-// Funkcje pomocnicze
+// Helper functions
 bool CheckWin(char player);
 bool IsBoardFull();
 
-// Definicje funkcji
 void Initialize()
 {
-    cout << "Welcome to tic-tac-toe game!" << endl;
+    cout << "Welcome to tic-tac-toe!" << endl;
     IsGameFinished = false;
     TurnNumber = 0;
     CurrentPlayer = PLAYER1_CHAR;
@@ -34,7 +33,7 @@ void Initialize()
     SelectedCol = -1;
     Winner = EMPTY_CHAR;
 
-    // Ustawiamy wszystkie pola na puste, aby plansza startowala "czysta"
+    // Clear the board to start with an empty grid
     for (int row = 0; row < BOARD_SIZE; ++row)
     {
         for (int col = 0; col < BOARD_SIZE; ++col)
@@ -48,14 +47,14 @@ void GetInput()
 {
     while (true)
     {
-        cout << "Podaj wiersz i kolumne (1-" << BOARD_SIZE << "), np. '1 3': ";
+        cout << "Enter row and column (1-" << BOARD_SIZE << "), e.g. '1 3': ";
 
         int rowInput = 0;
         int colInput = 0;
 
         if (!(cin >> rowInput >> colInput))
         {
-            cout << "Niepoprawne dane. Wpisz dwie liczby.\n";
+            cout << "Invalid data. Enter two numbers.\n";
             cin.clear();
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
             continue;
@@ -63,41 +62,41 @@ void GetInput()
 
         if (rowInput < 1 || rowInput > BOARD_SIZE || colInput < 1 || colInput > BOARD_SIZE)
         {
-            cout << "Wspolrzedne poza zakresem 1-" << BOARD_SIZE << ". Sprobuj ponownie.\n";
+            cout << "Coordinates must be between 1 and " << BOARD_SIZE << ". Try again.\n";
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
             continue;
         }
 
-        // Konwertujemy na indeksy 0-based do tablicy
+        // Convert to 0-based indices for the array
         int row = rowInput - 1;
         int col = colInput - 1;
 
         if (BOARD[row][col] != EMPTY_CHAR)
         {
-            cout << "Pole jest juz zajete. Wybierz inne.\n";
+            cout << "Field already taken. Choose another.\n";
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
             continue;
         }
 
         SelectedRow = row;
         SelectedCol = col;
-        cin.ignore(numeric_limits<streamsize>::max(), '\n'); // usuwamy reszte linii
+        cin.ignore(numeric_limits<streamsize>::max(), '\n'); // drop the rest of the line
         break;
     }
 }
 
 void Update()
 {
-    // Zapamietujemy, kto wykonal ruch (uzyteczne przy sprawdzaniu wygranej)
+    // Remember who moved (useful for win check)
     char playerJustMoved = CurrentPlayer;
 
-    // Zapisz ruch biezacego gracza na planszy
+    // Place the mark on the board
     BOARD[SelectedRow][SelectedCol] = playerJustMoved;
 
-    // Przechodzimy do kolejnej tury
+    // Advance to next turn
     TurnNumber++;
 
-    // Sprawdz wygrana
+    // Check win/draw
     if (CheckWin(playerJustMoved))
     {
         Winner = playerJustMoved;
@@ -105,10 +104,10 @@ void Update()
     }
     else if (IsBoardFull())
     {
-        IsGameFinished = true; // remis
+        IsGameFinished = true; // draw
     }
 
-    // Zmien gracza na nastepnego tylko jesli gra trwa dalej
+    // Switch player only if the game continues
     if (!IsGameFinished)
     {
         if (CurrentPlayer == PLAYER1_CHAR)
@@ -121,7 +120,7 @@ void Update()
         }
     }
 
-    // Wyczysc wybory ruchu, zostana ustawione w GetInput
+    // Clear chosen coordinates; new values will be set in GetInput
     SelectedRow = -1;
     SelectedCol = -1;
 }
@@ -134,9 +133,24 @@ void Render()
     system("clear");
 #endif
 
-    cout << "TicTacToe - Game Loop test\n";
-    cout << "Turn: " << TurnNumber << "\n";
-    cout << "(Gra konczy sie, gdy ktos wygra lub plansza sie zapelni)\n\n";
+    cout << "TicTacToe\n";
+    if (IsGameFinished)
+    {
+        cout << "Game finished.\n";
+        if (Winner != EMPTY_CHAR)
+        {
+            cout << "Winner: " << Winner << "\n\n";
+        }
+        else
+        {
+            cout << "Result: draw.\n\n";
+        }
+    }
+    else
+    {
+        cout << "Turn: " << TurnNumber << "\n";
+        cout << "Current player: " << CurrentPlayer << "\n\n";
+    }
 
     cout << "Board (row, column):\n   ";
     for (int col = 0; col < BOARD_SIZE; ++col)
@@ -155,7 +169,10 @@ void Render()
         cout << "\n";
     }
 
-    cout << "\nUse coordinates like '1 3' for row 1, column 3.\n";
+    if (!IsGameFinished)
+    {
+        cout << "\nUse coordinates like '1 3' for row 1, column 3.\n";
+    }
 }
 
 void Shutdown()
@@ -173,44 +190,69 @@ void Shutdown()
 
 bool CheckWin(char player)
 {
-    // Sprawdz wiersze
+    // Rows
     for (int row = 0; row < BOARD_SIZE; ++row)
     {
-        if (BOARD[row][0] == player &&
-            BOARD[row][1] == player &&
-            BOARD[row][2] == player)
+        bool rowWin = true;
+        for (int col = 0; col < BOARD_SIZE; ++col)
+        {
+            if (BOARD[row][col] != player)
+            {
+                rowWin = false;
+                break;
+            }
+        }
+        if (rowWin)
         {
             return true;
         }
     }
 
-    // Sprawdz kolumny
+    // Columns
     for (int col = 0; col < BOARD_SIZE; ++col)
     {
-        if (BOARD[0][col] == player &&
-            BOARD[1][col] == player &&
-            BOARD[2][col] == player)
+        bool colWin = true;
+        for (int row = 0; row < BOARD_SIZE; ++row)
+        {
+            if (BOARD[row][col] != player)
+            {
+                colWin = false;
+                break;
+            }
+        }
+        if (colWin)
         {
             return true;
         }
     }
 
-    // Przekatne
-    if (BOARD[0][0] == player &&
-        BOARD[1][1] == player &&
-        BOARD[2][2] == player)
+    // Main diagonal
+    bool mainDiag = true;
+    for (int i = 0; i < BOARD_SIZE; ++i)
+    {
+        if (BOARD[i][i] != player)
+        {
+            mainDiag = false;
+            break;
+        }
+    }
+    if (mainDiag)
     {
         return true;
     }
 
-    if (BOARD[0][2] == player &&
-        BOARD[1][1] == player &&
-        BOARD[2][0] == player)
+    // Anti-diagonal
+    bool antiDiag = true;
+    for (int i = 0; i < BOARD_SIZE; ++i)
     {
-        return true;
+        int col = BOARD_SIZE - 1 - i;
+        if (BOARD[i][col] != player)
+        {
+            antiDiag = false;
+            break;
+        }
     }
-
-    return false;
+    return antiDiag;
 }
 
 bool IsBoardFull()

@@ -13,7 +13,7 @@ int main()
     {
         Initialize();
 
-        // Pokazujemy plansze startowa, zanim gracz wykona pierwszy ruch
+        // Show the empty board before the first move
         Render();
 
         while (!IsGameFinished)
@@ -25,10 +25,10 @@ int main()
 
         Shutdown();
 
-        // Zapytaj gracza o ponowna gre
+        // Ask the player if they want to play again
         while (true)
         {
-            cout << "Zagrac ponownie? (y/n): ";
+            cout << "Play again? (y/n): ";
             char answer = 0;
             if (!(cin >> answer))
             {
@@ -52,7 +52,7 @@ int main()
             }
             else
             {
-                cout << "Wpisz 'y' lub 'n'.\n";
+                cout << "Please enter 'y' or 'n'.\n";
             }
         }
     }

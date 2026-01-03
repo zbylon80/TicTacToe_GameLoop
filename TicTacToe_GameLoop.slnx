@@ -3,5 +3,5 @@
     <Platform Name="x64" />
     <Platform Name="x86" />
   </Configurations>
-  <Project Path="TicTacToe_GameLoop.vcxproj" />
+  <Project Path="TicTacToe_GameLoop.vcxproj" Id="8d8b0b45-2cea-4fbe-b6c5-292c956df72e" />
 </Solution>
