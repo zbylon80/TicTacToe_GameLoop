@@ -1,0 +1,14 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Debug TicTacToe",
+      "type": "cppvsdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}\\build\\TicTacToe.exe",
+      "cwd": "${workspaceFolder}",
+      "preLaunchTask": "build-tictactoe",
+      "console": "integratedTerminal"
+    }
+  ]
+}

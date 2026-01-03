@@ -13,6 +13,7 @@ const char PLAYER2_CHAR = 'O';
 // Prosty stan gry (na razie minimalny)
 bool IsGameFinished = false;
 int TurnNumber = 0;
+char BOARD[3][3];
 
 // Definicje funkcji (na razie puste / testowe)
 void Initialize()
