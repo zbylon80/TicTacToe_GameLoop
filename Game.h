@@ -6,6 +6,9 @@ extern const char EMPTY_CHAR;
 extern const char PLAYER1_CHAR;
 extern const char PLAYER2_CHAR;
 
+// Game State
+extern bool IsGameFinished;
+
 // Game Loop functions
 void Initialize();
 void GetInput();
