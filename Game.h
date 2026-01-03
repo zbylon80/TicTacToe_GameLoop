@@ -13,6 +13,7 @@ extern char BOARD[3][3];
 extern int SelectedRow;
 extern int SelectedCol;
 extern char CurrentPlayer;
+extern char Winner;
 
 // Game Loop functions
 void Initialize();

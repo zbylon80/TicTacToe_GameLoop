@@ -17,6 +17,11 @@ char BOARD[3][3];
 int SelectedRow = -1;
 int SelectedCol = -1;
 char CurrentPlayer = PLAYER1_CHAR;
+char Winner = EMPTY_CHAR;
+
+// Funkcje pomocnicze
+bool CheckWin(char player);
+bool IsBoardFull();
 
 // Definicje funkcji
 void Initialize()
@@ -27,6 +32,7 @@ void Initialize()
     CurrentPlayer = PLAYER1_CHAR;
     SelectedRow = -1;
     SelectedCol = -1;
+    Winner = EMPTY_CHAR;
 
     // Ustawiamy wszystkie pola na puste, aby plansza startowala "czysta"
     for (int row = 0; row < BOARD_SIZE; ++row)
@@ -82,26 +88,37 @@ void GetInput()
 
 void Update()
 {
+    // Zapamietujemy, kto wykonal ruch (uzyteczne przy sprawdzaniu wygranej)
+    char playerJustMoved = CurrentPlayer;
+
     // Zapisz ruch biezacego gracza na planszy
-    BOARD[SelectedRow][SelectedCol] = CurrentPlayer;
+    BOARD[SelectedRow][SelectedCol] = playerJustMoved;
 
     // Przechodzimy do kolejnej tury
     TurnNumber++;
 
-    // Zmien gracza na nastepnego
-    if (CurrentPlayer == PLAYER1_CHAR)
+    // Sprawdz wygrana
+    if (CheckWin(playerJustMoved))
     {
-        CurrentPlayer = PLAYER2_CHAR;
+        Winner = playerJustMoved;
+        IsGameFinished = true;
     }
-    else
+    else if (IsBoardFull())
     {
-        CurrentPlayer = PLAYER1_CHAR;
+        IsGameFinished = true; // remis
     }
 
-    // Tymczasowy warunek konca: plansza zapelniona
-    if (TurnNumber >= BOARD_SIZE * BOARD_SIZE)
+    // Zmien gracza na nastepnego tylko jesli gra trwa dalej
+    if (!IsGameFinished)
     {
-        IsGameFinished = true;
+        if (CurrentPlayer == PLAYER1_CHAR)
+        {
+            CurrentPlayer = PLAYER2_CHAR;
+        }
+        else
+        {
+            CurrentPlayer = PLAYER1_CHAR;
+        }
     }
 
     // Wyczysc wybory ruchu, zostana ustawione w GetInput
@@ -119,7 +136,7 @@ void Render()
 
     cout << "TicTacToe - Game Loop test\n";
     cout << "Turn: " << TurnNumber << "\n";
-    cout << "(Gra konczy sie, gdy plansza jest pelna - tryb testowy)\n\n";
+    cout << "(Gra konczy sie, gdy ktos wygra lub plansza sie zapelni)\n\n";
 
     cout << "Board (row, column):\n   ";
     for (int col = 0; col < BOARD_SIZE; ++col)
@@ -144,4 +161,69 @@ void Render()
 void Shutdown()
 {
     cout << "\nGame over! Total turns: " << TurnNumber << endl;
+    if (Winner != EMPTY_CHAR)
+    {
+        cout << "Winner: " << Winner << endl;
+    }
+    else
+    {
+        cout << "Result: draw." << endl;
+    }
+}
+
+bool CheckWin(char player)
+{
+    // Sprawdz wiersze
+    for (int row = 0; row < BOARD_SIZE; ++row)
+    {
+        if (BOARD[row][0] == player &&
+            BOARD[row][1] == player &&
+            BOARD[row][2] == player)
+        {
+            return true;
+        }
+    }
+
+    // Sprawdz kolumny
+    for (int col = 0; col < BOARD_SIZE; ++col)
+    {
+        if (BOARD[0][col] == player &&
+            BOARD[1][col] == player &&
+            BOARD[2][col] == player)
+        {
+            return true;
+        }
+    }
+
+    // Przekatne
+    if (BOARD[0][0] == player &&
+        BOARD[1][1] == player &&
+        BOARD[2][2] == player)
+    {
+        return true;
+    }
+
+    if (BOARD[0][2] == player &&
+        BOARD[1][1] == player &&
+        BOARD[2][0] == player)
+    {
+        return true;
+    }
+
+    return false;
+}
+
+bool IsBoardFull()
+{
+    for (int row = 0; row < BOARD_SIZE; ++row)
+    {
+        for (int col = 0; col < BOARD_SIZE; ++col)
+        {
+            if (BOARD[row][col] == EMPTY_CHAR)
+            {
+                return false;
+            }
+        }
+    }
+    return true;
 }
