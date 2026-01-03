@@ -21,6 +21,15 @@ void Initialize()
     cout << "Welcome to tic-tac-toe game!" << endl;
     IsGameFinished = false;
     TurnNumber = 0;
+
+    // Ustawiamy wszystkie pola na puste, aby plansza startowała "czysta"
+    for (int row = 0; row < BOARD_SIZE; ++row)
+    {
+        for (int col = 0; col < BOARD_SIZE; ++col)
+        {
+            BOARD[row][col] = EMPTY_CHAR;
+        }
+    }
 }
 
 void GetInput()
@@ -51,6 +60,25 @@ void Render()
     cout << "TicTacToe - Game Loop test\n";
     cout << "Turn: " << TurnNumber << "\n";
     cout << "(After 3 turns the game will finish - test mode)\n\n";
+
+    cout << "Board (row, column):\n   ";
+    for (int col = 0; col < BOARD_SIZE; ++col)
+    {
+        cout << col << ' ';
+    }
+    cout << "\n";
+
+    for (int row = 0; row < BOARD_SIZE; ++row)
+    {
+        cout << ' ' << row << ' ';
+        for (int col = 0; col < BOARD_SIZE; ++col)
+        {
+            cout << BOARD[row][col] << ' ';
+        }
+        cout << "\n";
+    }
+
+    cout << "\nUse coordinates like '0 2' for row 0, column 2 (input soon).\n\n";
 
     cout << "Press ENTER to continue...";
     cin.ignore(numeric_limits<streamsize>::max(), '\n');
